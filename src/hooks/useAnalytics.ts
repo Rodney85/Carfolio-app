@@ -18,8 +18,9 @@ export function useAnalytics() {
     // Will be implemented with Convex
   }, []);
 
-  const getAnalytics = useCallback(async (userId: string) => {
+  const getAnalytics = useCallback(async () => {
     // This will be implemented with Convex
+    console.log('Getting analytics data');
     return {
       profileViews: 0,
       carClicks: {},

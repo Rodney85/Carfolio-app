@@ -1,3 +1,5 @@
+import { Mod } from "./mod";
+
 export interface Car {
   id: string;
   userId: string;

@@ -1,6 +1,5 @@
 import React from "react";
 import { cn } from "../../lib/utils";
-import { motion } from "framer-motion";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "outline" | "ghost";
@@ -38,10 +37,10 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       lg: "px-6 py-3 text-lg",
     };
 
+    // Using a regular button with styling instead of motion.button to avoid type conflicts
     return (
-      <motion.button
+      <button
         ref={ref}
-        whileTap={{ scale: 0.97 }}
         className={cn(
           "rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60",
           variantClasses[variant],
@@ -78,7 +77,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           {children}
           {!isLoading && rightIcon}
         </div>
-      </motion.button>
+      </button>
     );
   }
 ); 
