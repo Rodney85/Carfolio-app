@@ -1,9 +1,30 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Car, Plus, X, ChevronRight, ChevronLeft, Upload, Check } from "lucide-react";
-import { useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
+// Import mock implementation instead of real Convex API
+// import { useMutation } from "convex/react";
+// import { api } from "../../convex/_generated/api";
 import { fadeIn, slideUp } from "../../lib/utils";
+
+// Mock useMutation hook
+const useMutation = (mutationFunction: any) => {
+  return async (args: any) => {
+    console.log("Mock mutation called with:", args);
+    // Simulate successful mutation after 1 second
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({ success: true, id: "mock-car-id-" + Date.now() });
+      }, 1000);
+    });
+  };
+};
+
+// Mock API
+const api = {
+  cars: {
+    createCar: "cars:createCar" as any
+  }
+};
 
 // Define types for our form state
 interface CarFormData {
@@ -234,7 +255,7 @@ export default function AddCarForm() {
     
     try {
       // In a real implementation, we'd send the data to Convex
-      await createCar({
+      const result = await createCar({
         make: formData.make,
         model: formData.model,
         year: formData.year,
@@ -243,6 +264,8 @@ export default function AddCarForm() {
         mainImageUrl: formData.mainImageUrl,
         isPublic: formData.isPublic
       });
+      
+      console.log("Car created successfully:", result);
       
       // TODO: Add mods and media in a separate mutation
       
