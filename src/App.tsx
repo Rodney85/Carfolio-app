@@ -10,6 +10,7 @@ import { pageTransition } from "./lib/animations";
 import LandingPage from "./landing/LandingPage";
 import { SignInPage, SignUpPage, ProtectedRoute, ProfilePage } from "./components/auth";
 import { Dashboard } from "./components/dashboard";
+import { AddCarPage } from "./components/cars";
 import { useAuth } from "@clerk/clerk-react";
 
 // We'll create placeholder components for now
@@ -190,13 +191,21 @@ function App() {
           </ProtectedRoute>
         } />
         
+        <Route path="/app/cars/new" element={
+          <ProtectedRoute>
+            <AuthenticatedLayout>
+              <AddCarPage />
+            </AuthenticatedLayout>
+          </ProtectedRoute>
+        } />
+        
         <Route path="/app/cars/*" element={
           <ProtectedRoute>
             <AuthenticatedLayout>
               <div className="p-4">
                 <h1 className="text-2xl font-bold mb-4">Cars Page</h1>
                 <p>This is a placeholder for the cars page.</p>
-      </div>
+              </div>
             </AuthenticatedLayout>
           </ProtectedRoute>
         } />
@@ -207,7 +216,7 @@ function App() {
               <div className="p-4">
                 <h1 className="text-2xl font-bold mb-4">Analytics</h1>
                 <p>This is a placeholder for the analytics page.</p>
-      </div>
+              </div>
             </AuthenticatedLayout>
           </ProtectedRoute>
         } />
