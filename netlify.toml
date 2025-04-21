@@ -7,10 +7,6 @@
   NODE_VERSION = "20"
   NPM_FLAGS = "--legacy-peer-deps"
 
-# Custom build plugin for debugging
-[[plugins]]
-  package = "./build-plugin.js"
-
 # Handle client-side routing
 [[redirects]]
   from = "/*"
