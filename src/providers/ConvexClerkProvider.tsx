@@ -1,5 +1,7 @@
 import { ReactNode, useEffect, useState } from "react";
-import { ClerkProvider } from "@clerk/clerk-react";
+import { ClerkProvider, useAuth } from "@clerk/clerk-react";
+import { ConvexProviderWithClerk } from "convex/react-clerk";
+import { ConvexReactClient } from "convex/react";
 
 // We'll initialize Convex client properly later
 // For now, we're using a mock implementation
@@ -7,6 +9,9 @@ import { ClerkProvider } from "@clerk/clerk-react";
 interface ConvexClerkProviderProps {
   children: ReactNode;
 }
+
+// Initialize the Convex client
+const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
 
 export function ConvexClerkProvider({ children }: ConvexClerkProviderProps) {
   const [mounted, setMounted] = useState(false);
@@ -31,9 +36,16 @@ export function ConvexClerkProvider({ children }: ConvexClerkProviderProps) {
     throw new Error("Missing Clerk Publishable Key");
   }
 
+  // Check if Convex URL is configured
+  if (!import.meta.env.VITE_CONVEX_URL) {
+    throw new Error("Missing Convex URL");
+  }
+
   return (
     <ClerkProvider publishableKey={publishableKey} afterSignOutUrl="/">
-      {children}
+      <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
+        {children}
+      </ConvexProviderWithClerk>
     </ClerkProvider>
   );
 }

@@ -1,56 +1,9 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Car, Plus, X, ChevronRight, ChevronLeft, Upload, Check } from "lucide-react";
-// Import mock implementation instead of real Convex API
-// import { useMutation } from "convex/react";
-// import { api } from "../../convex/_generated/api";
+import { useMutation } from "convex/react";
+import { api } from "../../convex/_generated/api";
 import { fadeIn, slideUp } from "../../lib/utils";
-
-// Mock useMutation hook
-const useMutation = (mutationFunction: any) => {
-  return async (args: any) => {
-    console.log("Mock mutation called with:", args);
-    // Simulate successful mutation after 1 second
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({ success: true, id: "mock-car-id-" + Date.now() });
-      }, 1000);
-    });
-  };
-};
-
-// Mock API
-const api = {
-  cars: {
-    createCar: "cars:createCar" as any
-  }
-};
-
-// Define types for our form state
-interface CarFormData {
-  // Basic Info (Step 1)
-  year: number;
-  make: string;
-  model: string;
-  nickname: string;
-  status: "Building" | "Completed";
-  mainImageUrl: string;
-  
-  // Mods (Step 2)
-  mods: {
-    category: string;
-    name: string;
-    brand: string;
-    affiliateLink: string;
-  }[];
-  
-  // Media (Step 3)
-  mediaUrls: string[];
-  youtubeUrls: string[];
-
-  // Always visible
-  isPublic: boolean;
-}
 
 // List of common car makes for the dropdown
 const carMakes = [
