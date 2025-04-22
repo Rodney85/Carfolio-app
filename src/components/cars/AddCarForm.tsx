@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Car, Plus, X, ChevronRight, ChevronLeft, Upload, Check } from "lucide-react";
 import { useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
+import { api } from "../../../convex/_generated/api";
 import { fadeIn, slideUp } from "../../lib/utils";
 
 // List of common car makes for the dropdown
