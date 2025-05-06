@@ -1,9 +1,8 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, Car, Settings, Plus, Sun, Moon } from "lucide-react";
+import { Home, Car, Plus, BarChart2, Settings } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "../../lib/utils";
-import { useTheme } from "../../providers/ThemeProvider";
 
 interface NavItemProps {
   icon: React.ReactNode;
@@ -17,86 +16,75 @@ const NavItem: React.FC<NavItemProps> = ({ icon, label, path, isActive }) => {
     <Link
       to={path}
       className={cn(
-        "flex flex-col items-center justify-center px-2",
-        isActive ? "text-primary-500" : "text-gray-400"
+        "flex flex-col items-center justify-center px-2 transition-colors duration-200",
+        isActive ? "text-primary-500" : "text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
       )}
     >
-      <div className="flex-shrink-0">{icon}</div>
+      <div className={cn(
+        "flex-shrink-0 transition-transform duration-200",
+        isActive ? "text-primary-500" : "",
+        "hover:scale-110"
+      )}>{icon}</div>
       <span className="text-xs mt-1">{label}</span>
     </Link>
   );
 };
 
-// Theme toggle button for mobile
-const ThemeToggleButton: React.FC = () => {
-  const { theme, toggleTheme } = useTheme();
-  
-  return (
-    <button 
-      onClick={toggleTheme}
-      className="flex flex-col items-center justify-center"
-    >
-      <div className="text-gray-400 p-2">
-        {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
-      </div>
-      <span className="text-xs mt-1 text-gray-400">
-        {theme === "dark" ? "Light" : "Dark"}
-      </span>
-    </button>
-  );
-};
+// Removed unused ThemeToggleButton component
 
 export const MobileNav: React.FC = () => {
   const location = useLocation();
-  
-  const navItems = [
-    { icon: <Home size={20} />, label: "Home", path: "/dashboard" },
-    { icon: <Car size={20} />, label: "Cars", path: "/app/cars" },
-    { icon: <Settings size={20} />, label: "Profile", path: "/profile" },
-  ];
 
   return (
     <motion.div
       initial={{ y: 100 }}
       animate={{ y: 0 }}
-      className="md:hidden fixed bottom-0 left-0 right-0 bg-dark-900 border-t border-dark-800 z-30"
+      className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-dark-900 border-t border-gray-200 dark:border-dark-800 z-30"
     >
       <div className="flex items-center justify-around h-16 px-4">
-        {/* First three nav items */}
-        {navItems.slice(0, 2).map((item) => (
-          <NavItem
-            key={item.path}
-            icon={item.icon}
-            label={item.label}
-            path={item.path}
-            isActive={location.pathname === item.path}
-          />
-        ))}
+        {/* Standard Navigation Items */}
+        <NavItem
+          key="dashboard"
+          icon={<Home size={20} />}
+          label="Dashboard"
+          path="/dashboard"
+          isActive={location.pathname === "/dashboard"}
+        />
         
-        {/* Add Car Button (Center) */}
+        <NavItem
+          key="cars"
+          icon={<Car size={20} />}
+          label="My Cars"
+          path="/cars"
+          isActive={location.pathname === "/cars"}
+        />
+        
+        {/* Add Car button in the center */}
         <Link
-          to="/app/cars/new"
+          to="/cars/new"
           className="flex flex-col items-center justify-center"
         >
-          <div className="bg-primary-500 text-white p-3 rounded-full -mt-6 shadow-lg">
+          <div className="bg-primary-500 text-white p-3 rounded-full -mt-6 shadow-lg hover:bg-primary-600 transition-colors duration-200">
             <Plus size={20} />
           </div>
-          <span className="text-xs mt-1 text-gray-400">Add Car</span>
+          <span className="text-xs mt-1 text-gray-600 dark:text-gray-400">Add Car</span>
         </Link>
         
-        {/* Theme Toggle */}
-        <ThemeToggleButton />
+        <NavItem
+          key="analytics"
+          icon={<BarChart2 size={20} />}
+          label="Analytics"
+          path="/analytics"
+          isActive={location.pathname === "/analytics"}
+        />
         
-        {/* Last nav item */}
-        {navItems.slice(2).map((item) => (
-          <NavItem
-            key={item.path}
-            icon={item.icon}
-            label={item.label}
-            path={item.path}
-            isActive={location.pathname === item.path}
-          />
-        ))}
+        <NavItem
+          key="settings"
+          icon={<Settings size={20} />}
+          label="Settings"
+          path="/settings"
+          isActive={location.pathname === "/settings"}
+        />
       </div>
     </motion.div>
   );

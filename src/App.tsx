@@ -5,13 +5,15 @@ import { Header } from "./components/layout/Header";
 import { Footer } from "./components/layout/Footer";
 import Sidebar from "./components/layout/Sidebar";
 import MobileNav from "./components/layout/MobileNav";
-import AppHeader from "./components/layout/AppHeader";
 import { pageTransition } from "./lib/animations";
 import LandingPage from "./landing/LandingPage";
 import { SignInPage, SignUpPage, ProtectedRoute, ProfilePage } from "./components/auth";
 import { Dashboard } from "./components/dashboard";
 import { AddCarPage } from "./components/cars";
 import { useAuth } from "@clerk/clerk-react";
+import GaragePage from "./components/garage/GaragePage"; // Will be displayed at /cars route
+import AnalyticsPage from "./components/analytics/AnalyticsPage";
+import ClerkSyncProvider from "./components/auth/ClerkSyncProvider";
 
 // We'll create placeholder components for now
 const Home = () => (
@@ -118,9 +120,6 @@ function App() {
         
         {/* Main content */}
         <div className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'md:ml-64' : 'md:ml-16'}`}>
-          {/* Desktop Header */}
-          <AppHeader />
-          
           <main className="flex-1 px-4 py-6 pb-20 md:pb-6">
             {children}
           </main>
@@ -134,7 +133,8 @@ function App() {
 
   return (
     <Router>
-      <Routes>
+      <ClerkSyncProvider>
+        <Routes>
         {/* Landing page route - no Header/Footer as they're included in LandingPage */}
         <Route path="/" element={
           <AuthRedirect redirectTo="/dashboard">
@@ -191,7 +191,7 @@ function App() {
           </ProtectedRoute>
         } />
         
-        <Route path="/app/cars/new" element={
+        <Route path="/cars/new" element={
           <ProtectedRoute>
             <AuthenticatedLayout>
               <AddCarPage />
@@ -199,28 +199,34 @@ function App() {
           </ProtectedRoute>
         } />
         
-        <Route path="/app/cars/*" element={
+        <Route path="/cars" element={
+          <ProtectedRoute>
+            <AuthenticatedLayout>
+              <GaragePage />
+            </AuthenticatedLayout>
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/cars/:id" element={
           <ProtectedRoute>
             <AuthenticatedLayout>
               <div className="p-4">
-                <h1 className="text-2xl font-bold mb-4">Cars Page</h1>
-                <p>This is a placeholder for the cars page.</p>
+                <h1 className="text-2xl font-bold mb-4">Car Details</h1>
+                <p>This is a placeholder for the individual car details page.</p>
               </div>
             </AuthenticatedLayout>
           </ProtectedRoute>
         } />
         
-        <Route path="/app/analytics" element={
+        <Route path="/analytics" element={
           <ProtectedRoute>
             <AuthenticatedLayout>
-              <div className="p-4">
-                <h1 className="text-2xl font-bold mb-4">Analytics</h1>
-                <p>This is a placeholder for the analytics page.</p>
-              </div>
+              <AnalyticsPage />
             </AuthenticatedLayout>
           </ProtectedRoute>
         } />
-      </Routes>
+        </Routes>
+      </ClerkSyncProvider>
     </Router>
   );
 }

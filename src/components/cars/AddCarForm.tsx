@@ -3,21 +3,32 @@ import { motion } from "framer-motion";
 import { Car, Plus, X, ChevronRight, ChevronLeft, Upload, Check } from "lucide-react";
 import { useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { fadeIn, slideUp } from "../../lib/utils";
+import { ModCategory } from "../../types/car";
 
-// List of common car makes for the dropdown
-const carMakes = [
-  "Acura", "Alfa Romeo", "Aston Martin", "Audi", "Bentley", "BMW", "Bugatti",
-  "Buick", "Cadillac", "Chevrolet", "Chrysler", "Dodge", "Ferrari", "Fiat",
-  "Ford", "Genesis", "GMC", "Honda", "Hyundai", "Infiniti", "Jaguar", "Jeep",
-  "Kia", "Lamborghini", "Land Rover", "Lexus", "Lincoln", "Lotus", "Maserati",
-  "Mazda", "McLaren", "Mercedes-Benz", "Mini", "Mitsubishi", "Nissan", "Porsche",
-  "Ram", "Rolls-Royce", "Subaru", "Tesla", "Toyota", "Volkswagen", "Volvo"
-];
+// Form data type definition
+interface CarFormData {
+  year: number;
+  make: string;
+  model: string;
+  nickname: string;
+  status: "Building" | "Completed";
+  mainImageUrl: string;
+  mods: Array<{
+    category: ModCategory;
+    name: string;
+    brand: string;
+    description: string;
+    price: number;
+    productLink?: string;
+  }>;
+  mediaUrls: string[];
+  youtubeUrls: string[];
+  isPublic: boolean;
+}
 
 // List of mod categories
-const modCategories = [
-  "Engine", "Suspension", "Wheels/Tires", "Exterior", "Interior", "Electronics", "Other"
+const modCategories: ModCategory[] = [
+  "Engine", "Suspension", "Wheels", "Exterior", "Interior", "Electronics", "Other"
 ];
 
 export default function AddCarForm() {
@@ -31,7 +42,7 @@ export default function AddCarForm() {
     nickname: "",
     status: "Building",
     mainImageUrl: "",
-    mods: [{ category: "Engine", name: "", brand: "", affiliateLink: "" }],
+    mods: [{ category: "Engine", name: "", brand: "", description: "", price: 0, productLink: "" }],
     mediaUrls: [],
     youtubeUrls: [],
     isPublic: true
@@ -89,7 +100,7 @@ export default function AddCarForm() {
       ...formData,
       mods: [
         ...formData.mods,
-        { category: "Engine", name: "", brand: "", affiliateLink: "" }
+        { category: "Engine", name: "", brand: "", description: "", price: 0, productLink: "" }
       ]
     });
   };
@@ -110,34 +121,48 @@ export default function AddCarForm() {
     
     setIsUploading(true);
     
-    // Mock upload progress for now
-    // In a real implementation, we'd generate a signed URL with Convex,
-    // upload to Backblaze, and get back the CDN URL
-    const timer = setInterval(() => {
-      setUploadProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(timer);
-          setTimeout(() => {
-            setIsUploading(false);
-            setUploadProgress(0);
-            
-            // Once "uploaded", add URLs to state (using mock URLs for now)
-            const newMediaUrls = [...formData.mediaUrls];
-            for (let i = 0; i < files.length; i++) {
-              newMediaUrls.push(`https://example.com/media/car-${Date.now()}-${i}.jpg`);
-            }
-            
-            setFormData({
-              ...formData,
-              mediaUrls: newMediaUrls
-            });
-            
-          }, 500);
-          return 100;
-        }
-        return prev + 10;
+    try {
+      // Mock upload progress for now
+      // In a real implementation, we'd generate a signed URL with Convex,
+      // upload to Backblaze, and get back the CDN URL
+      const timer = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 100) {
+            clearInterval(timer);
+            setTimeout(() => {
+              setIsUploading(false);
+              setUploadProgress(0);
+              
+              // Once "uploaded", add URLs to state (using mock URLs for now)
+              const newMediaUrls = [...formData.mediaUrls];
+              Array.from(files).forEach((_, index) => {
+                newMediaUrls.push(`https://example.com/media/car-${Date.now()}-${index}.jpg`);
+              });
+              
+              setFormData(prevFormData => ({
+                ...prevFormData,
+                mediaUrls: newMediaUrls
+              }));
+              setErrors({
+                ...errors,
+                year: "Please complete all required fields."
+              });
+              
+            }, 500);
+            return 100;
+          }
+          return prev + 10;
+        });
+      }, 200);
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      setIsUploading(false);
+      setUploadProgress(0);
+      setErrors({
+        ...errors,
+        mainImageUrl: 'Failed to upload image. Please try again.'
       });
-    }, 200);
+    }
   };
 
   // Handle YouTube URL input
@@ -204,6 +229,22 @@ export default function AddCarForm() {
   // Submit the form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate required fields
+    const validationErrors: Record<string, string> = {};
+    
+    if (!formData.make) validationErrors.make = "Make is required";
+    if (!formData.model) validationErrors.model = "Model is required";
+    if (!formData.year || formData.year < 1900 || formData.year > new Date().getFullYear() + 1) {
+      validationErrors.year = "Please enter a valid year";
+    }
+    if (!formData.mainImageUrl) validationErrors.mainImageUrl = "Main image is required";
+    
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+    
     setIsSubmitting(true);
     
     try {
@@ -230,7 +271,7 @@ export default function AddCarForm() {
         nickname: "",
         status: "Building",
         mainImageUrl: "",
-        mods: [{ category: "Engine", name: "", brand: "", affiliateLink: "" }],
+        mods: [{ category: "Engine", name: "", brand: "", description: "", price: 0, productLink: "" }],
         mediaUrls: [],
         youtubeUrls: [],
         isPublic: true
@@ -241,9 +282,11 @@ export default function AddCarForm() {
       alert("Car added successfully!");
     } catch (error) {
       console.error("Error adding car:", error);
+      // Instead of using 'form' which doesn't exist in the type, use a generic error message on a valid field
       setErrors({
         ...errors,
-        form: "Failed to add car. Please try again."
+        year: "Failed to add car. Please try again.",
+        ...validationErrors
       });
     } finally {
       setIsSubmitting(false);
@@ -251,11 +294,11 @@ export default function AddCarForm() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto bg-dark-800 border border-dark-700 rounded-xl p-6">
+    <div className="max-w-3xl mx-auto bg-white border border-gray-200 dark:bg-dark-800 dark:border-dark-700 rounded-xl p-6">
       <h1 className="text-2xl font-bold mb-6 text-center">Add Your Car</h1>
       
       {/* Progress bar */}
-      <div className="w-full h-2 bg-dark-700 rounded-full mb-8">
+      <div className="w-full h-2 bg-gray-200 dark:bg-dark-700 rounded-full mb-8">
         <div 
           className="h-2 bg-primary-500 rounded-full transition-all duration-300"
           style={{ width: `${progressPercentage}%` }}
@@ -265,19 +308,19 @@ export default function AddCarForm() {
       {/* Step indicators */}
       <div className="flex justify-between mb-8">
         <div className={`flex flex-col items-center ${currentStep >= 1 ? 'text-primary-500' : 'text-gray-500'}`}>
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center mb-2 ${currentStep >= 1 ? 'bg-primary-500 text-white' : 'bg-dark-700'}`}>
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center mb-2 ${currentStep >= 1 ? 'bg-primary-500 text-white' : 'bg-gray-200 dark:bg-dark-700'}`}>
             1
           </div>
           <span className="text-sm">Basic Info</span>
         </div>
         <div className={`flex flex-col items-center ${currentStep >= 2 ? 'text-primary-500' : 'text-gray-500'}`}>
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center mb-2 ${currentStep >= 2 ? 'bg-primary-500 text-white' : 'bg-dark-700'}`}>
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center mb-2 ${currentStep >= 2 ? 'bg-primary-500 text-white' : 'bg-gray-200 dark:bg-dark-700'}`}>
             2
           </div>
           <span className="text-sm">Mod List</span>
         </div>
         <div className={`flex flex-col items-center ${currentStep >= 3 ? 'text-primary-500' : 'text-gray-500'}`}>
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center mb-2 ${currentStep >= 3 ? 'bg-primary-500 text-white' : 'bg-dark-700'}`}>
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center mb-2 ${currentStep >= 3 ? 'bg-primary-500 text-white' : 'bg-gray-200 dark:bg-dark-700'}`}>
             3
           </div>
           <span className="text-sm">Media</span>
@@ -305,7 +348,7 @@ export default function AddCarForm() {
                   onChange={handleInputChange}
                   min="1900"
                   max={new Date().getFullYear() + 1}
-                  className="w-full bg-dark-700 border border-dark-600 rounded-md px-3 py-2"
+                  className="w-full bg-gray-100 border border-gray-300 dark:bg-dark-700 dark:border-dark-600 rounded-md px-3 py-2"
                   required
                 />
                 {errors.year && <p className="text-red-500 text-sm mt-1">{errors.year}</p>}
@@ -313,19 +356,15 @@ export default function AddCarForm() {
               
               <div>
                 <label className="block text-sm font-medium mb-1">Make*</label>
-                <select
+                <input
+                  type="text"
                   name="make"
                   value={formData.make}
                   onChange={handleInputChange}
-                  className="w-full bg-dark-700 border border-dark-600 rounded-md px-3 py-2"
+                  className="w-full bg-gray-100 border border-gray-300 dark:bg-dark-700 dark:border-dark-600 rounded-md px-3 py-2"
+                  placeholder="e.g., BMW, Toyota, Honda"
                   required
-                >
-                  <option value="">Select Make</option>
-                  {carMakes.map(make => (
-                    <option key={make} value={make}>{make}</option>
-                  ))}
-                  <option value="Other">Other</option>
-                </select>
+                />
                 {errors.make && <p className="text-red-500 text-sm mt-1">{errors.make}</p>}
               </div>
             </div>
@@ -337,7 +376,7 @@ export default function AddCarForm() {
                 name="model"
                 value={formData.model}
                 onChange={handleInputChange}
-                className="w-full bg-dark-700 border border-dark-600 rounded-md px-3 py-2"
+                className="w-full bg-gray-100 border border-gray-300 dark:bg-dark-700 dark:border-dark-600 rounded-md px-3 py-2"
                 placeholder="e.g., Supra, 911, Skyline"
                 required
               />
@@ -351,7 +390,7 @@ export default function AddCarForm() {
                 name="nickname"
                 value={formData.nickname}
                 onChange={handleInputChange}
-                className="w-full bg-dark-700 border border-dark-600 rounded-md px-3 py-2"
+                className="w-full bg-gray-100 border border-gray-300 dark:bg-dark-700 dark:border-dark-600 rounded-md px-3 py-2"
                 placeholder="e.g., Project Midnight, Track Beast"
               />
             </div>
@@ -384,9 +423,131 @@ export default function AddCarForm() {
               </div>
             </div>
             
+
+            
+            <div className="flex items-center mt-2">
+              <input
+                type="checkbox"
+                id="isPublic"
+                name="isPublic"
+                checked={formData.isPublic}
+                onChange={(e) => setFormData({...formData, isPublic: e.target.checked})}
+                className="mr-2"
+              />
+              <label htmlFor="isPublic" className="text-sm">
+                Make this car public (visible on your profile)
+              </label>
+            </div>
+          </motion.div>
+        )}
+        
+        {/* Step 2: Mod List */}
+        {currentStep === 2 && (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="space-y-6"
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold">Modifications</h2>
+              <button
+                type="button"
+                onClick={addMod}
+                className="flex items-center text-sm bg-gray-200 hover:bg-gray-300 dark:bg-dark-700 dark:hover:bg-dark-600 px-3 py-1.5 rounded-md transition"
+              >
+                <Plus size={16} className="mr-1" />
+                Add Mod
+              </button>
+            </div>
+            
+            {formData.mods.length === 0 ? (
+              <div className="text-center py-8 border border-dashed border-gray-300 dark:border-dark-600 rounded-lg">
+                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-gray-200 dark:bg-dark-700 flex items-center justify-center">
+                  <Car className="h-6 w-6 text-gray-500" />
+                </div>
+                <p className="text-gray-500 dark:text-gray-400 mb-3">No mods added yet</p>
+                <button
+                  type="button"
+                  onClick={addMod}
+                  className="flex items-center mx-auto text-sm bg-gray-200 hover:bg-gray-300 dark:bg-dark-700 dark:hover:bg-dark-600 px-3 py-1.5 rounded-md transition"
+                >
+                  <Plus size={16} className="mr-1" />
+                  Add Your First Mod
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {formData.mods.map((mod, index) => (
+                  <div 
+                    key={index} 
+                    className="bg-gray-100 dark:bg-dark-700 rounded-lg p-4 border border-gray-300 dark:border-dark-600 relative"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => removeMod(index)}
+                      className="absolute top-2 right-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200"
+                    >
+                      <X size={16} />
+                    </button>
+                    
+                    <div className="grid grid-cols-2 gap-4 mb-3">
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Category</label>
+                        <select
+                          value={mod.category}
+                          onChange={(e) => handleModChange(index, 'category', e.target.value)}
+                          className="w-full bg-white dark:bg-dark-800 border border-gray-300 dark:border-dark-600 rounded-md px-3 py-2"
+                        >
+                          {modCategories.map(category => (
+                            <option key={category} value={category}>{category}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                    </div>
+                    
+                    <div className="mb-3">
+                      <label className="block text-sm font-medium mb-1">Part Name</label>
+                      <input
+                        type="text"
+                        value={mod.name}
+                        onChange={(e) => handleModChange(index, 'name', e.target.value)}
+                        className="w-full bg-white dark:bg-dark-800 border border-gray-300 dark:border-dark-600 rounded-md px-3 py-2"
+                        placeholder="e.g., GTX3584RS Turbo, Coilovers V3"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Product Link (Optional)</label>
+                      <input
+                        type="text"
+                        value={mod.productLink}
+                        onChange={(e) => handleModChange(index, 'productLink', e.target.value)}
+                        className="w-full bg-white dark:bg-dark-800 border border-gray-300 dark:border-dark-600 rounded-md px-3 py-2"
+                        placeholder="https://..."
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </motion.div>
+        )}
+        
+        {/* Step 3: Media Gallery */}
+        {currentStep === 3 && (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="space-y-6"
+          >
+            <h2 className="text-xl font-semibold mb-4">Media Gallery</h2>
+            
             <div>
-              <label className="block text-sm font-medium mb-1">Main Image</label>
-              <div className="border-2 border-dashed border-dark-600 rounded-lg p-6 text-center">
+              <label className="block text-sm font-medium mb-2">Main Image*</label>
+              <div className="border-2 border-dashed border-dark-600 rounded-lg p-6 text-center mb-6">
                 <input
                   type="file"
                   id="main-image"
@@ -421,139 +582,8 @@ export default function AddCarForm() {
                   </label>
                 )}
               </div>
-            </div>
-            
-            <div className="flex items-center mt-2">
-              <input
-                type="checkbox"
-                id="isPublic"
-                name="isPublic"
-                checked={formData.isPublic}
-                onChange={(e) => setFormData({...formData, isPublic: e.target.checked})}
-                className="mr-2"
-              />
-              <label htmlFor="isPublic" className="text-sm">
-                Make this car public (visible on your profile)
-              </label>
-            </div>
-          </motion.div>
-        )}
-        
-        {/* Step 2: Mod List */}
-        {currentStep === 2 && (
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            className="space-y-6"
-          >
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold">Modifications</h2>
-              <button
-                type="button"
-                onClick={addMod}
-                className="flex items-center text-sm bg-dark-700 hover:bg-dark-600 px-3 py-1.5 rounded-md transition"
-              >
-                <Plus size={16} className="mr-1" />
-                Add Mod
-              </button>
-            </div>
-            
-            {formData.mods.length === 0 ? (
-              <div className="text-center py-8 border border-dashed border-dark-600 rounded-lg">
-                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-dark-700 flex items-center justify-center">
-                  <Car className="h-6 w-6 text-gray-500" />
-                </div>
-                <p className="text-gray-400 mb-3">No mods added yet</p>
-                <button
-                  type="button"
-                  onClick={addMod}
-                  className="flex items-center mx-auto text-sm bg-dark-700 hover:bg-dark-600 px-3 py-1.5 rounded-md transition"
-                >
-                  <Plus size={16} className="mr-1" />
-                  Add Your First Mod
-                </button>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {formData.mods.map((mod, index) => (
-                  <div 
-                    key={index} 
-                    className="bg-dark-700 rounded-lg p-4 border border-dark-600 relative"
-                  >
-                    <button
-                      type="button"
-                      onClick={() => removeMod(index)}
-                      className="absolute top-2 right-2 text-gray-400 hover:text-gray-200"
-                    >
-                      <X size={16} />
-                    </button>
-                    
-                    <div className="grid grid-cols-2 gap-4 mb-3">
-                      <div>
-                        <label className="block text-sm font-medium mb-1">Category</label>
-                        <select
-                          value={mod.category}
-                          onChange={(e) => handleModChange(index, 'category', e.target.value)}
-                          className="w-full bg-dark-800 border border-dark-600 rounded-md px-3 py-2"
-                        >
-                          {modCategories.map(category => (
-                            <option key={category} value={category}>{category}</option>
-                          ))}
-                        </select>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium mb-1">Brand</label>
-                        <input
-                          type="text"
-                          value={mod.brand}
-                          onChange={(e) => handleModChange(index, 'brand', e.target.value)}
-                          className="w-full bg-dark-800 border border-dark-600 rounded-md px-3 py-2"
-                          placeholder="e.g., Garrett, KW, Advan"
-                        />
-                      </div>
-                    </div>
-                    
-                    <div className="mb-3">
-                      <label className="block text-sm font-medium mb-1">Part Name</label>
-                      <input
-                        type="text"
-                        value={mod.name}
-                        onChange={(e) => handleModChange(index, 'name', e.target.value)}
-                        className="w-full bg-dark-800 border border-dark-600 rounded-md px-3 py-2"
-                        placeholder="e.g., GTX3584RS Turbo, Coilovers V3"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Affiliate Link (Optional)</label>
-                      <input
-                        type="text"
-                        value={mod.affiliateLink}
-                        onChange={(e) => handleModChange(index, 'affiliateLink', e.target.value)}
-                        className="w-full bg-dark-800 border border-dark-600 rounded-md px-3 py-2"
-                        placeholder="https://..."
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </motion.div>
-        )}
-        
-        {/* Step 3: Media Gallery */}
-        {currentStep === 3 && (
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            className="space-y-6"
-          >
-            <h2 className="text-xl font-semibold mb-4">Media Gallery</h2>
-            
-            <div>
-              <label className="block text-sm font-medium mb-2">Images & Videos</label>
+
+              <label className="block text-sm font-medium mb-2">Additional Images & Videos</label>
               <div className="border-2 border-dashed border-dark-600 rounded-lg p-8 text-center">
                 {isUploading ? (
                   <div className="space-y-3">
@@ -627,7 +657,7 @@ export default function AddCarForm() {
                   type="text"
                   id="youtube-url"
                   placeholder="https://youtube.com/watch?v=..."
-                  className="flex-grow bg-dark-700 border border-dark-600 rounded-md px-3 py-2"
+                  className="flex-grow bg-gray-100 border border-gray-300 dark:bg-dark-700 dark:border-dark-600 rounded-md px-3 py-2"
                 />
                 <button
                   type="button"
@@ -635,7 +665,7 @@ export default function AddCarForm() {
                     const input = document.getElementById("youtube-url") as HTMLInputElement;
                     if (input.value) addYoutubeUrl(input.value);
                   }}
-                  className="bg-dark-700 hover:bg-dark-600 px-3 py-2 rounded-md transition"
+                  className="bg-gray-300 hover:bg-gray-400 dark:bg-dark-700 dark:hover:bg-dark-600 px-3 py-2 rounded-md transition"
                 >
                   Add
                 </button>
@@ -647,7 +677,7 @@ export default function AddCarForm() {
                   {formData.youtubeUrls.map((url, index) => (
                     <div 
                       key={index} 
-                      className="flex justify-between items-center bg-dark-700 rounded-md px-3 py-2"
+                      className="flex justify-between items-center bg-gray-100 dark:bg-dark-700 rounded-md px-3 py-2"
                     >
                       <span className="text-sm truncate flex-grow">{url}</span>
                       <button
@@ -671,7 +701,7 @@ export default function AddCarForm() {
             <button
               type="button"
               onClick={goToPreviousStep}
-              className="flex items-center px-4 py-2 bg-dark-700 hover:bg-dark-600 rounded-md transition"
+              className="flex items-center px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-dark-700 dark:hover:bg-dark-600 rounded-md transition"
             >
               <ChevronLeft size={16} className="mr-1" />
               Back
@@ -715,4 +745,4 @@ export default function AddCarForm() {
       </form>
     </div>
   );
-} 
+}

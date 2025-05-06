@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import AddCarForm from "./AddCarForm";
-import { fadeIn } from "../../lib/utils";
+import { fadeIn } from "../../lib/animations";
 
 export default function AddCarPage() {
   return (
@@ -16,7 +16,7 @@ export default function AddCarPage() {
       <div className="mb-6">
         <Link 
           to="/dashboard" 
-          className="flex items-center text-sm text-gray-400 hover:text-white transition-colors"
+          className="flex items-center text-sm text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white transition-colors"
         >
           <ChevronLeft size={16} className="mr-1" />
           Back to Dashboard
@@ -26,4 +26,4 @@ export default function AddCarPage() {
       <AddCarForm />
     </motion.div>
   );
-} 
+}

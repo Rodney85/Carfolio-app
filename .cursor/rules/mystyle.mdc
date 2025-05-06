@@ -1,0 +1,47 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+# Your rule content
+
+- Read and understand the codebase to understand my project.
+- Read the all the .md files to understand my project.
+- check for any dead code or code that is not being used we need to remove it but i have to approving it.
+- Break project into small manageable tasks and document in a your own folder to learn and understand what you have to done and needs to be done next
+
+# Coding pattern Preference
+
+- Always prefer simple solution.
+- Avoid duplication of code whenerver possible,which means checking for other areas of the codebase that may might already have the similar code and functionality.
+- Write code that takes into account the different environments: development,testing and production.
+- You are allowed to make the only changes i request you to make. Or you are  confident that you have understood  and relate to the changes being requested "NO RANDOM CODES".
+- Keep the files and code very clean and organized well{for easy reading and debugging}.
+- Avoid writing scripts in files if possible,especially if the script is likely only to be run once.
+- Avoid having files over 200-300 lines of code. Refactor at that point.
+- Mocking data is only needed for tests, never mock data for development or production.
+- Never add stubbing or fake patterns to code that affects the development or production environment.
+- Never overwrite my .env file without first asking me for permission and explain what is the game plan.
+
+# my stack
+
+- Frontend: React, TypeScript, TailwindCSS, Vite,lucide icons and framer motion for web app development and websites/ landing pages.
+        ->For mobile app i use: React Native, TypeScript, Expo,TailwindCSS,lucide icons and framer motion.
+- Backend: Node.js, but mostly Convex ,firebase for storage{images and videos}
+- Database: Convex
+- Authentication: custom + convex
+- Deployment: netlify
+- Testing: {"am still learning"}
+- Formatting: Prettier
+- Version Control: Git
+
+# Coding Workflow Preferences
+
+- Focus on the task at hand and make the necessary changes.{"areas of code that is relevant to the task}
+- Dont touch code that is unrelated to the task.
+- Write thorough test for all major functionality.
+- Avoid making changes to the patterns architecture of how a feature works after it has shown to work well,unless explicitly instructed.
+- Always think about what other methods are areas of code might be affected by code changes.
+
+

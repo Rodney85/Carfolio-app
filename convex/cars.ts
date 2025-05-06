@@ -8,7 +8,7 @@ import { getUser } from "./users";
 export const getUserCars = query({
   args: {},
   handler: async (ctx) => {
-    const user = await getUser(ctx, {});
+    const user = await getUser(ctx);
     
     const cars = await ctx.db
       .query("cars")
@@ -34,7 +34,7 @@ export const getCarById = query({
     
     // If the car is not public, check if the user is the owner
     if (!car.isPublic) {
-      const user = await getUser(ctx, {});
+      const user = await getUser(ctx);
       
       if (car.userId !== user._id) {
         throw new Error("Not authorized to view this car");
@@ -56,10 +56,12 @@ export const createCar = mutation({
     title: v.string(),
     description: v.optional(v.string()),
     mainImageUrl: v.optional(v.string()),
+    mediaUrls: v.optional(v.array(v.string())),
+    youtubeUrls: v.optional(v.array(v.string())),
     isPublic: v.boolean(),
   },
   handler: async (ctx, args) => {
-    const user = await getUser(ctx, {});
+    const user = await getUser(ctx);
     
     const now = Date.now();
     
@@ -71,6 +73,8 @@ export const createCar = mutation({
       title: args.title,
       description: args.description,
       mainImageUrl: args.mainImageUrl,
+      mediaUrls: args.mediaUrls || [],
+      youtubeUrls: args.youtubeUrls || [],
       createdAt: now,
       updatedAt: now,
       isPublic: args.isPublic,
@@ -93,10 +97,12 @@ export const updateCar = mutation({
     title: v.optional(v.string()),
     description: v.optional(v.string()),
     mainImageUrl: v.optional(v.string()),
+    mediaUrls: v.optional(v.array(v.string())),
+    youtubeUrls: v.optional(v.array(v.string())),
     isPublic: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    const user = await getUser(ctx, {});
+    const user = await getUser(ctx);
     
     const car = await ctx.db.get(args.carId);
     
@@ -115,6 +121,8 @@ export const updateCar = mutation({
       ...(args.title !== undefined && { title: args.title }),
       ...(args.description !== undefined && { description: args.description }),
       ...(args.mainImageUrl !== undefined && { mainImageUrl: args.mainImageUrl }),
+      ...(args.mediaUrls !== undefined && { mediaUrls: args.mediaUrls }),
+      ...(args.youtubeUrls !== undefined && { youtubeUrls: args.youtubeUrls }),
       ...(args.isPublic !== undefined && { isPublic: args.isPublic }),
       updatedAt: Date.now(),
     });
@@ -131,7 +139,7 @@ export const deleteCar = mutation({
     carId: v.id("cars"),
   },
   handler: async (ctx, args) => {
-    const user = await getUser(ctx, {});
+    const user = await getUser(ctx);
     
     const car = await ctx.db.get(args.carId);
     
