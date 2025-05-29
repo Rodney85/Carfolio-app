@@ -22,6 +22,7 @@ import type * as media from "../media.js";
 import type * as mods from "../mods.js";
 import type * as users from "../users.js";
 import type * as util from "../util.js";
+import type * as utils from "../utils.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -41,6 +42,7 @@ declare const fullApi: ApiFromModules<{
   mods: typeof mods;
   users: typeof users;
   util: typeof util;
+  utils: typeof utils;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,

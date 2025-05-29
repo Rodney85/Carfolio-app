@@ -6,6 +6,8 @@ import { motion } from "framer-motion";
 import { Menu, X, User } from "lucide-react";
 import { fadeIn, slideUp } from "../../lib/animations";
 import { useAuth, UserButton } from "@clerk/clerk-react";
+import { MdOutlineHub } from "react-icons/md";
+import { slowSpin } from "../../lib/animations";
 
 export const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
@@ -24,9 +26,24 @@ export const Header: React.FC = () => {
             transition={{ duration: 0.5 }}
             className="text-2xl font-bold text-primary"
           >
-            🚗
+            <div className="flex items-center gap-1">
+              <span 
+                className="text-2xl text-primary-500 dark:text-primary-400 atma-regular" 
+                data-component-name="MotionComponent"
+                style={{ fontFamily: '"Atma", system-ui', fontWeight: 400 }}
+              >
+                Carfolio
+              </span>
+              <motion.div
+                animate="animate"
+                variants={slowSpin}
+                className="flex items-center justify-center ml-0.5"
+                style={{ marginTop: '2px' }}
+              >
+                <MdOutlineHub size={24} className="text-primary-500 dark:text-primary-400" />
+              </motion.div>
+            </div>
           </motion.div>
-          <span className="text-xl font-bold">Carfolio</span>
         </Link>
 
         {/* Desktop Navigation */}

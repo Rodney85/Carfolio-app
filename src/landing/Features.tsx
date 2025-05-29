@@ -1,42 +1,30 @@
 import { motion } from 'framer-motion';
-import { Gauge, Wrench, Share2, Users, Link, BarChart3 } from 'lucide-react';
+import { Gauge, Share2, Users, Link, Check } from 'lucide-react';
 
 // Feature items
 const features = [
   {
     icon: Gauge,
-    title: 'Showcase Your Builds',
-    description: 'Create beautiful profiles for each of your car builds with specs, photos, and videos.',
+    title: '📱 Digital Car Portfolios',
+    description: 'Create dedicated profiles for each vehicle with specs, modification history, and media galleries that you control.',
     color: 'primary'
   },
   {
-    icon: Wrench,
-    title: 'Organized Mod Lists',
-    description: 'Categorize your modifications by type (engine, suspension, etc.) for easy browsing.',
-    color: 'blue'
-  },
-  {
-    icon: Link,
-    title: 'Affiliate Links',
-    description: 'Add your affiliate links to parts and earn from your audience when they shop your builds.',
-    color: 'green'
-  },
-  {
-    icon: BarChart3,
-    title: 'Analytics Dashboard',
-    description: 'Track profile views, car clicks, and part link engagement to optimize your content.',
-    color: 'purple'
-  },
-  {
     icon: Share2,
-    title: 'One Link to Share',
-    description: 'Just like Linktree, but specifically designed for car enthusiasts and their builds.',
+    title: '🔗 One Shareable Link',
+    description: 'carfolio.io/yourusername - One simple link to share across Instagram, TikTok, forums, and with other enthusiasts.',
     color: 'orange'
   },
   {
-    icon: Users,
-    title: 'Build Community',
-    description: 'Connect with other enthusiasts and grow your audience with shareable profiles.',
+    icon: Link,
+    title: '💰 Monetize Your Knowledge',
+    description: "Add affiliate links to parts you've used and earn commission when your followers purchase through your recommendations.",
+    color: 'green'
+  },
+  {
+    icon: Check,
+    title: '✅ Build Credibility',
+    description: 'Verified profiles establish your expertise and build trust with your automotive community.',
     color: 'pink'
   }
 ];
@@ -58,7 +46,7 @@ export default function Features() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            Everything You Need to Showcase Your Cars
+            Key Features
           </motion.h2>
           <motion.p 
             className="mt-4 text-gray-400 text-lg"
@@ -67,11 +55,11 @@ export default function Features() {
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            Built by car enthusiasts, for car enthusiasts. The perfect platform to show off your builds and connect with the community.
+            CarFolio is the solution car enthusiasts have been waiting for.
           </motion.p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-16">
           {features.map((feature, index) => (
             <motion.div
               key={index}
@@ -88,6 +76,44 @@ export default function Features() {
               <p className="text-gray-400">{feature.description}</p>
             </motion.div>
           ))}
+        </div>
+        
+        {/* The Problem We're Solving */}
+        <motion.div
+          className="mt-16 bg-dark-800/50 backdrop-blur-sm border border-dark-700 rounded-xl p-8 max-w-4xl mx-auto"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
+          <h3 className="text-2xl font-bold text-white mb-6">The Problem We're Solving</h3>
+          <p className="text-gray-300 mb-4">As car enthusiasts ourselves, we know the frustration:</p>
+          <ul className="space-y-2 mb-6">
+            <li className="flex items-start">
+              <span className="text-primary-500 mr-2">•</span>
+              <span className="text-gray-300">Social media buries your best build photos in your feed</span>
+            </li>
+            <li className="flex items-start">
+              <span className="text-primary-500 mr-2">•</span>
+              <span className="text-gray-300">Forums limit your ability to showcase multiple cars</span>
+            </li>
+            <li className="flex items-start">
+              <span className="text-primary-500 mr-2">•</span>
+              <span className="text-gray-300">There's no easy way to share your complete build history</span>
+            </li>
+            <li className="flex items-start">
+              <span className="text-primary-500 mr-2">•</span>
+              <span className="text-gray-300">You spend time recommending parts but earn nothing from it</span>
+            </li>
+          </ul>
+        </motion.div>
+        
+        {/* Enthusiast Guarantee */}
+        <div className="max-w-xl mx-auto mt-12 bg-dark-800/60 border border-primary-500/20 rounded-lg p-6">
+          <h3 className="text-xl font-bold mb-3">Enthusiast Guarantee</h3>
+          <p className="text-gray-300">
+            We're builders too. If CarFolio doesn't help you better showcase your vehicles and connect with the community within 30 days of launch, we'll refund your first month and help you export your data.
+          </p>
         </div>
       </div>
     </section>

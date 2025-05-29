@@ -4,36 +4,78 @@ import { ArrowRight, CheckCircle } from 'lucide-react';
 // Pricing tiers
 const tiers = [
   {
-    name: 'Free',
-    description: 'Perfect for casual enthusiasts',
-    price: '$0',
-    period: 'forever',
+    name: 'Founding Member',
+    description: 'Exclusive Launch',
+    price: '$9.99',
+    period: 'per month for life',
+    status: 'First to be unlocked',
+    remaining: '12/30 spots remaining',
     features: [
-      'Up to 2 car profiles',
-      'Basic analytics',
-      'Photo & video uploads',
-      'Shareable link'
+      'Founding Member badge on profile',
+      'First access to all new features (30 days early)',
+      'Unlimited vehicle profiles',
+      'Premium analytics dashboard',
+      'Lifetime guarantee on this price'
     ],
-    cta: 'Get Started',
-    ctaLink: '/sign-up',
-    highlighted: false
+    cta: 'Join Waitlist to Reserve',
+    ctaLink: '/sign-up?plan=founding',
+    highlighted: true,
+    note: 'Pre-launch reservations get priority access'
   },
   {
-    name: 'Pro',
-    description: 'For serious car builders',
-    price: '$9.99',
-    period: 'per month',
+    name: 'Early Bird',
+    description: 'Early Access',
+    price: '$19.99',
+    period: 'per month for life',
+    status: 'Unlocks after Exclusive Launch fills',
+    remaining: '40 spots total',
     features: [
-      'Unlimited car profiles',
-      'Advanced analytics',
-      'Custom domain',
-      'Priority support',
-      'Verified badge',
-      'No ads'
+      'Early Bird badge on profile',
+      'Early access to new features (20 days early)',
+      'Unlimited vehicle profiles',
+      'Premium analytics dashboard',
+      'Priority support'
     ],
-    cta: 'Get Pro',
-    ctaLink: '/sign-up?plan=pro',
-    highlighted: true
+    cta: 'Join Waitlist',
+    ctaLink: '/sign-up?plan=earlybird',
+    highlighted: false,
+    note: 'Get notified when Early Bird tier unlocks'
+  },
+  {
+    name: 'Builder',
+    description: 'Build Club',
+    price: '$27.99',
+    period: 'per month for life',
+    status: 'Unlocks after Early Bird fills',
+    remaining: '30 spots total',
+    features: [
+      'Builder badge on profile',
+      'Priority access to new features (10 days early)',
+      'Unlimited vehicle profiles',
+      'Premium analytics dashboard',
+      'Community access'
+    ],
+    cta: 'Join Waitlist',
+    ctaLink: '/sign-up?plan=builder',
+    highlighted: false,
+    note: 'Get notified when Builder tier unlocks'
+  },
+  {
+    name: 'Premium',
+    description: 'After Public Launch',
+    price: '$49.99',
+    period: 'per month',
+    status: 'Available to everyone after waitlist',
+    features: [
+      'Unlimited vehicle profiles',
+      'Advanced analytics & reporting',
+      'Priority support',
+      'Standard access to new features'
+    ],
+    cta: 'Coming Soon',
+    ctaLink: '/sign-up?plan=premium',
+    highlighted: false,
+    disabled: true
   }
 ];
 
@@ -54,7 +96,7 @@ export default function Pricing() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            Simple, Transparent Pricing
+            Exclusive Waitlist Pricing
           </motion.h2>
           <motion.p 
             className="mt-4 text-gray-400 text-lg"
@@ -63,11 +105,20 @@ export default function Pricing() {
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            Start for free, upgrade when you're ready. No hidden fees or complicated tiers.
+            Reserve Your Tier Before Launch
+          </motion.p>
+          <motion.p
+            className="mt-2 text-gray-400 text-base max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            Join our waitlist now to lock in these special lifetime prices. All tiers receive premium features, but prices increase as spots fill. Standard pricing after launch will be $49.99/month.
           </motion.p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
           {tiers.map((tier, index) => (
             <motion.div
               key={index}
@@ -88,19 +139,29 @@ export default function Pricing() {
                 </div>
               )}
               
-              <div className="p-6 md:p-8">
-                <h3 className="text-2xl font-bold text-white mb-2">{tier.name}</h3>
-                <p className="text-gray-400 mb-6">{tier.description}</p>
+              <div className="p-5 md:p-6">
+                <h3 className="text-xl font-bold text-white mb-1">{tier.name}</h3>
+                <p className="text-gray-400 mb-3 text-sm font-semibold">{tier.description}</p>
                 
-                <div className="mb-6">
-                  <span className="text-4xl font-bold text-white">{tier.price}</span>
-                  <span className="text-gray-400 ml-2">{tier.period}</span>
+                <div className="mb-2">
+                  <span className="text-3xl font-bold text-white">{tier.price}</span>
+                  <span className="text-gray-400 ml-2 text-sm">{tier.period}</span>
                 </div>
                 
-                <ul className="space-y-4 mb-8">
+                {tier.status && (
+                  <p className="text-xs italic text-primary-400 mb-2">{tier.status}</p>
+                )}
+                
+                {tier.remaining && (
+                  <div className="bg-dark-700/50 text-center py-1 px-2 rounded text-xs mb-4 font-semibold">
+                    {tier.remaining}
+                  </div>
+                )}
+                
+                <ul className="space-y-2 mb-6 text-sm">
                   {tier.features.map((feature, i) => (
                     <li key={i} className="flex items-start">
-                      <CheckCircle className="text-primary-500 mr-2 mt-0.5 flex-shrink-0" size={18} />
+                      <CheckCircle className="text-primary-500 mr-2 mt-0.5 flex-shrink-0" size={16} />
                       <span className="text-gray-300">{feature}</span>
                     </li>
                   ))}
@@ -109,27 +170,50 @@ export default function Pricing() {
                 <a 
                   href={tier.ctaLink} 
                   className={`
-                    block w-full py-3 rounded-lg text-center font-medium transition duration-200
+                    block w-full py-2.5 rounded-lg text-center font-medium text-sm transition duration-200
                     ${tier.highlighted 
                       ? 'bg-primary-500 hover:bg-primary-600 text-white' 
-                      : 'bg-dark-700 hover:bg-dark-600 text-white border border-dark-600'}
+                      : tier.disabled 
+                        ? 'bg-dark-700/50 text-gray-500 cursor-not-allowed' 
+                        : 'bg-dark-700 hover:bg-dark-600 text-white border border-dark-600'}
                   `}
                 >
                   {tier.cta}
-                  <ArrowRight className="inline ml-1" size={16} />
+                  {!tier.disabled && <ArrowRight className="inline ml-1" size={14} />}
                 </a>
+                
+                {tier.note && (
+                  <p className="text-xs text-gray-500 mt-2 text-center italic">{tier.note}</p>
+                )}
               </div>
             </motion.div>
           ))}
         </div>
         
-        <div className="mt-16 text-center">
-          <p className="text-gray-400">
-            Need a custom solution for your car club or business?{' '}
-            <a href="/contact" className="text-primary-400 hover:text-primary-300 underline">
-              Contact us
-            </a>
-          </p>
+        <div className="mt-16 max-w-3xl mx-auto bg-dark-800/70 border border-dark-700 rounded-xl p-6">
+          <h3 className="text-xl font-bold mb-4 text-center">The Waitlist Advantage</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex items-start">
+              <CheckCircle className="text-primary-500 mr-2 mt-0.5 flex-shrink-0" size={18} />
+              <span className="text-gray-300"><span className="font-semibold">Lock in lifetime pricing</span> - Pay the same low founder rate forever, even as standard prices rise</span>
+            </div>
+            <div className="flex items-start">
+              <CheckCircle className="text-primary-500 mr-2 mt-0.5 flex-shrink-0" size={18} />
+              <span className="text-gray-300"><span className="font-semibold">Early feature access</span> - Be first to try new features before everyone else</span>
+            </div>
+            <div className="flex items-start">
+              <CheckCircle className="text-primary-500 mr-2 mt-0.5 flex-shrink-0" size={18} />
+              <span className="text-gray-300"><span className="font-semibold">Exclusive badges</span> - Show your OG status with tier-specific profile badges</span>
+            </div>
+            <div className="flex items-start">
+              <CheckCircle className="text-primary-500 mr-2 mt-0.5 flex-shrink-0" size={18} />
+              <span className="text-gray-300"><span className="font-semibold">Influence development</span> - Early members help shape product priorities</span>
+            </div>
+            <div className="flex items-start col-span-full">
+              <CheckCircle className="text-primary-500 mr-2 mt-0.5 flex-shrink-0" size={18} />
+              <span className="text-gray-300"><span className="font-semibold">Boost your spot</span> - Refer friends to move up the waitlist and unlock tiers faster</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>

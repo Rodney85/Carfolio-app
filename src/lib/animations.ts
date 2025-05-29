@@ -30,6 +30,18 @@ export const carCard: Variants = {
   hover: { y: -5, scale: 1.02, transition: { duration: 0.2 } },
 };
 
+export const slowSpin: Variants = {
+  animate: { 
+    rotate: 360, 
+    transition: { 
+      duration: 20, 
+      ease: "linear", 
+      repeat: Infinity,
+      repeatType: "loop" 
+    } 
+  }
+};
+
 export const pageTransition: Variants = {
   initial: { opacity: 0 },
   enter: { opacity: 1, transition: { duration: 0.3 } },

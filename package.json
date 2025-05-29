@@ -13,7 +13,9 @@
   "dependencies": {
     "@clerk/clerk-react": "^5.28.2",
     "@clerk/clerk-sdk-node": "^5.1.6",
+    "@hookform/resolvers": "^5.0.1",
     "@types/uuid": "^10.0.0",
+    "backblaze-b2": "^1.7.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "convex": "^1.23.0",
@@ -22,12 +24,15 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-dropzone": "^14.3.8",
+    "react-hook-form": "^7.56.3",
+    "react-icons": "^5.5.0",
     "react-lottie-player": "^2.1.0",
     "react-router-dom": "^7.5.1",
     "recharts": "^2.15.3",
     "sonner": "^2.0.3",
     "tailwind-merge": "^3.2.0",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "zod": "^3.24.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",

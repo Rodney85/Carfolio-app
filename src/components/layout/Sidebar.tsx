@@ -1,23 +1,11 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import {
-  Home,
-  Car,
-  Settings,
-  BarChart2,
-  ChevronRight,
-  ChevronLeft,
-  X,
-  ImageIcon,
-  Share2,
-  Plus,
-  Heart,
-  LogOut
-} from "lucide-react";
+import { Home, Car, BarChart2, ChevronRight, ChevronLeft, Plus, LogOut, Settings } from "lucide-react";
+import { MdOutlineHub } from "react-icons/md";
 import { UserButton, useAuth } from "@clerk/clerk-react";
 
-import { fadeIn } from "../../lib/animations";
+import { fadeIn, slowSpin } from "../../lib/animations";
 import { cn } from "../../lib/utils";
 
 interface SidebarProps {
@@ -81,9 +69,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
       { icon: <Plus size={20} />, label: "Add Car", path: "/cars/new" },
     ],
     content: [
-      { icon: <ImageIcon size={20} />, label: "Media Gallery", path: "/gallery" },
-      { icon: <Share2 size={20} />, label: "Share Profile", path: "/share" },
-      { icon: <Heart size={20} />, label: "Saved Parts", path: "/saved" },
+      // Content items removed per request
     ],
     system: [
       { icon: <BarChart2 size={20} />, label: "Analytics", path: "/analytics" },
@@ -101,16 +87,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
         isOpen ? "w-64" : "w-16"
       )}
     >
-      {/* Close button - only visible when sidebar is open */}
-      {isOpen && (
-        <button
-          onClick={toggleSidebar}
-          className="absolute right-2 top-2 p-1 rounded-md hover:bg-gray-200 text-gray-500 hover:text-gray-900 dark:hover:bg-dark-800 dark:text-gray-400 dark:hover:text-white"
-          aria-label="Close sidebar"
-        >
-          <X size={18} />
-        </button>
-      )}
+      {/* Close button removed per request */}
 
       {/* Collapse/Expand button */}
       <button
@@ -126,17 +103,35 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
         "flex items-center px-4 py-5",
         "justify-start"
       )}>
-        <div className="text-2xl font-bold bg-primary-500 text-white p-2 rounded-lg transition-transform hover:scale-105">
-          <Car size={24} />
-        </div>
-        {isOpen && (
-          <motion.span
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="ml-3 text-xl font-bold text-gray-900 dark:text-white"
-          >
-            CarMods
-          </motion.span>
+        {isOpen ? (
+          <div className="flex items-center gap-1 ml-2">
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-2xl text-primary-500 dark:text-primary-400 atma-regular"
+              data-component-name="MotionComponent"
+              style={{ fontFamily: '"Atma", system-ui', fontWeight: 400 }}
+            >
+              CarFolio
+            </motion.span>
+            <motion.div
+              animate="animate"
+              variants={slowSpin}
+              className="flex items-center justify-center ml-0.5"
+              style={{ marginTop: '2px' }}
+            >
+              <MdOutlineHub size={24} className="text-primary-500 dark:text-primary-400" />
+            </motion.div>
+          </div>
+        ) : (
+          <div className="p-2 rounded-full transition-transform hover:scale-105 flex items-center justify-center bg-light-300 dark:bg-dark-900 border border-gray-200 dark:border-dark-800">
+            <motion.div
+              animate="animate"
+              variants={slowSpin}
+            >
+              <MdOutlineHub size={24} className="text-primary-500 dark:text-primary-400" />
+            </motion.div>
+          </div>
         )}
       </div>
 

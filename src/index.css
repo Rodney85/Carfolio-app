@@ -2,6 +2,54 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Google Fonts Import */
+@import url('https://fonts.googleapis.com/css2?family=Atma:wght@300;400;500;600;700&family=Playpen+Sans+Arabic:wght@100..800&display=swap');
+
+/* Custom Font Classes */
+.playpen-sans-arabic-logo {
+  font-family: "Playpen Sans Arabic", cursive !important;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+}
+
+.atma-light {
+  font-family: "Atma", system-ui !important;
+  font-weight: 300;
+  font-style: normal;
+}
+
+.atma-regular {
+  font-family: "Atma", system-ui !important;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.atma-medium {
+  font-family: "Atma", system-ui !important;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.atma-semibold {
+  font-family: "Atma", system-ui !important;
+  font-weight: 600;
+  font-style: normal;
+}
+
+.atma-bold {
+  font-family: "Atma", system-ui !important;
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* Direct selector for the logo component */
+[data-component-name="MotionComponent"] {
+  font-family: "Atma", system-ui !important;
+  font-weight: 700;
+  font-style: normal;
+}
+
 @layer base {
   body {
     @apply bg-light-200 text-gray-900 dark:bg-dark-900 dark:text-gray-100;

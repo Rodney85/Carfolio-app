@@ -9,11 +9,14 @@ import { pageTransition } from "./lib/animations";
 import LandingPage from "./landing/LandingPage";
 import { SignInPage, SignUpPage, ProtectedRoute, ProfilePage } from "./components/auth";
 import { Dashboard } from "./components/dashboard";
-import { AddCarPage } from "./components/cars";
+import { AddCarWizard } from "./components/cars";
 import { useAuth } from "@clerk/clerk-react";
 import GaragePage from "./components/garage/GaragePage"; // Will be displayed at /cars route
 import AnalyticsPage from "./components/analytics/AnalyticsPage";
 import ClerkSyncProvider from "./components/auth/ClerkSyncProvider";
+import PublicProfilePage from "./components/public/PublicProfilePage";
+import IconPreview from "./components/IconPreview";
+import LoadingSpinner from "./components/shared/LoadingSpinner";
 
 // We'll create placeholder components for now
 const Home = () => (
@@ -94,7 +97,7 @@ function AuthRedirect({ children, redirectTo }: { children: React.ReactNode, red
   if (!isLoaded) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-dark-900 text-gray-100">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
+        <LoadingSpinner size={60} />
       </div>
     );
   }
@@ -136,6 +139,10 @@ function App() {
       <ClerkSyncProvider>
         <Routes>
         {/* Landing page route - no Header/Footer as they're included in LandingPage */}
+        {/* Public Profile Page - accessible without auth */}
+        <Route path="/:username" element={<PublicProfilePage />} />
+        
+        {/* Landing Page */}
         <Route path="/" element={
           <AuthRedirect redirectTo="/dashboard">
             <LandingPage />
@@ -191,10 +198,16 @@ function App() {
           </ProtectedRoute>
         } />
         
+        {/* Legacy route - will redirect to new wizard */}
         <Route path="/cars/new" element={
+          <Navigate to="/cars/add" replace />
+        } />
+        
+        {/* New Add Car Wizard route */}
+        <Route path="/cars/add" element={
           <ProtectedRoute>
             <AuthenticatedLayout>
-              <AddCarPage />
+              <AddCarWizard />
             </AuthenticatedLayout>
           </ProtectedRoute>
         } />
@@ -225,6 +238,11 @@ function App() {
             </AuthenticatedLayout>
           </ProtectedRoute>
         } />
+        
+        {/* Temporary route to view icon options */}
+        <Route path="/icon-preview" element={
+          <IconPreview />
+        }/>
         </Routes>
       </ClerkSyncProvider>
     </Router>

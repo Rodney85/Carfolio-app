@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
+import { MdOutlineHub } from 'react-icons/md';
+import { motion } from 'framer-motion';
+import { slowSpin } from '../lib/animations';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -27,9 +30,27 @@ export default function Navbar() {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <a href="/" className="flex items-center">
-            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-400 to-primary-600">
-              Carfolio
-            </span>
+            <div className="flex items-center gap-1">
+              <span 
+                className="text-2xl md:text-3xl text-primary-500 dark:text-primary-400 atma-regular" 
+                data-component-name="Navbar"
+                style={{ fontFamily: '"Atma", system-ui', fontWeight: 400 }}
+              >
+                Carfolio
+              </span>
+              <motion.div
+                animate="animate"
+                variants={slowSpin}
+                className="flex items-center justify-center ml-0.5"
+                style={{ marginTop: '2px' }}
+              >
+                <MdOutlineHub 
+                  size={24} 
+                  className="text-primary-500 dark:text-primary-400" 
+                  data-component-name="MdOutlineHub" 
+                />
+              </motion.div>
+            </div>
           </a>
           
           {/* Desktop Navigation */}
